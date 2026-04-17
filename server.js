@@ -19,6 +19,13 @@ const path = require('path');
 
 const { handleSocialShare, handleGetRewards } = require('./api/social_share');
 const { startScheduler }                       = require('./services/socialBot');
+const {
+  handleGetAutomationConfig,
+  handleUpdateAutomationConfig,
+  handlePromoteNow,
+  handleGetAutomationLogs,
+} = require('./api/admin_automation');
+const { initAutomation } = require('./services/promotionAutomation');
 
 const PORT       = Number(process.env.PORT) || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -89,20 +96,37 @@ function serveStatic(req, res) {
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin',  '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Token');
 
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
   req.user = authenticate(req);
 
   const { method, url } = req;
+  const pathname = url.split('?')[0];
 
-  if (method === 'POST' && url === '/api/social_share') {
+  if (method === 'POST' && pathname === '/api/social_share') {
     return handleSocialShare(req, res);
   }
 
-  if (method === 'GET' && url.startsWith('/api/social_share/rewards')) {
+  if (method === 'GET' && pathname === '/api/social_share/rewards') {
     return handleGetRewards(req, res);
+  }
+
+  if (method === 'GET' && pathname === '/api/admin/automation') {
+    return handleGetAutomationConfig(req, res);
+  }
+
+  if (method === 'POST' && pathname === '/api/admin/automation/settings') {
+    return handleUpdateAutomationConfig(req, res);
+  }
+
+  if (method === 'POST' && pathname === '/api/admin/automation/promote') {
+    return handlePromoteNow(req, res);
+  }
+
+  if (method === 'GET' && pathname === '/api/admin/automation/logs') {
+    return handleGetAutomationLogs(req, res);
   }
 
   if (method === 'GET') {
@@ -120,6 +144,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`[Server] HashUtopia Social Bot running on http://localhost:${PORT}`);
   startScheduler();
+  initAutomation();
 });
 
 // Graceful shutdown
