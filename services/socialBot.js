@@ -29,7 +29,8 @@ const MESSAGE_TEMPLATES = {
   /** Twitter: hard 280-character limit */
   twitter({ title, url }) {
     const msg = `🚀 ${title} — Earn HSHU tokens by mining, sharing & playing on HashUtopia! 👇 ${url} #HashUtopia #HSHU #Crypto #DeFi`;
-    return msg.length <= 280 ? msg : msg.slice(0, 277) + '…';
+    // '…' is 1 character; slice to 279 so total length is exactly 280.
+    return msg.length <= 280 ? msg : msg.slice(0, 279) + '…';
   },
 
   /** Telegram: markdown format */

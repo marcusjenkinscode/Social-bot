@@ -29,9 +29,10 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 
 /**
  * Derive req.user from the Authorization header.
- * Convention for this demo: `Bearer <userId>` — the raw token is used as
- * the user ID so the server can be exercised with curl without a full
- * auth implementation.
+ *
+ * ⚠️  DEVELOPMENT STUB — replace with real JWT / session validation before
+ * deploying to production.  The current implementation accepts any non-empty
+ * Bearer token and uses its value directly as the user ID.
  *
  * @param {http.IncomingMessage} req
  * @returns {{ id: string|number }|null}
@@ -63,16 +64,21 @@ function serveStatic(req, res) {
   const urlPath  = req.url.split('?')[0];
   const resolved = path.resolve(path.join(PUBLIC_DIR, urlPath));
 
-  // Path-traversal guard
-  if (!resolved.startsWith(PUBLIC_DIR + path.sep) && resolved !== PUBLIC_DIR) {
+  // Path-traversal guard: resolved path must be PUBLIC_DIR itself or a
+  // descendent of it (i.e. starts with PUBLIC_DIR + the OS separator).
+  if (resolved !== PUBLIC_DIR && !resolved.startsWith(PUBLIC_DIR + path.sep)) {
     res.writeHead(403); res.end('Forbidden'); return;
   }
 
-  fs.readFile(resolved, (err, data) => {
-    if (err) { res.writeHead(404); res.end('Not Found'); return; }
-    const mime = MIME_TYPES[path.extname(resolved)] ?? 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': mime });
-    res.end(data);
+  // Only serve regular files — never directories.
+  fs.stat(resolved, (statErr, stat) => {
+    if (statErr || !stat.isFile()) { res.writeHead(404); res.end('Not Found'); return; }
+    fs.readFile(resolved, (err, data) => {
+      if (err) { res.writeHead(500); res.end('Internal Server Error'); return; }
+      const mime = MIME_TYPES[path.extname(resolved)] ?? 'application/octet-stream';
+      res.writeHead(200, { 'Content-Type': mime });
+      res.end(data);
+    });
   });
 }
 

@@ -288,7 +288,10 @@
    CONFIG
 ────────────────────────────────────────────────────────── */
 const API_BASE   = '';          // same origin
-const AUTH_TOKEN = localStorage.getItem('hu_token') || '1'; // demo: user id=1
+// ⚠️  DEMO ONLY — replace with a real session/JWT token before going to production.
+// Never fall back to a hard-coded user ID; if no token exists, the API calls will
+// fail with 401 and the user will be prompted to log in.
+const AUTH_TOKEN = localStorage.getItem('hu_token') ?? '';
 const HEADERS    = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${AUTH_TOKEN}` };
 
 /* ──────────────────────────────────────────────────────────

@@ -52,7 +52,8 @@ function matches(row, where) {
 
 function nextId(rows) {
   if (rows.length === 0) return 1;
-  return Math.max(...rows.map(r => r.id || 0)) + 1;
+  const ids = rows.map(r => (typeof r.id === 'number' ? r.id : 0));
+  return Math.max(...ids) + 1;
 }
 
 // ─────────────────────────────────────────────
