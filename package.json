@@ -1,0 +1,14 @@
+{
+  "name": "social-bot",
+  "version": "1.0.0",
+  "description": "HashUtopia Social Bot — automated social media promotion and reward tracking",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
