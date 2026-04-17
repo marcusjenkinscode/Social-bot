@@ -133,7 +133,7 @@
     <div class="card">
       <div class="row">
         <div>
-          <label for="adminToken">Admin token (optional if ADMIN_TOKEN is unset)</label>
+          <label for="adminToken">Admin token (required if ADMIN_TOKEN is set on server)</label>
           <input id="adminToken" type="password" placeholder="Enter ADMIN_TOKEN" />
         </div>
         <div>
@@ -223,7 +223,6 @@
       const headers = { 'Content-Type': 'application/json' };
       if (token) {
         headers['X-Admin-Token'] = token;
-        headers['Authorization'] = `Bearer ${token}`;
       }
       return headers;
     }

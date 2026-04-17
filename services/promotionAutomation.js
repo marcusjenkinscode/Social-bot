@@ -193,7 +193,7 @@ function restartSchedulerIfEnabled(settings = getSettings()) {
   if (!settings.auto_promote) return;
   scheduler = setInterval(() => {
     promoteNow('scheduler').catch(err => {
-      console.error('[Automation] Scheduled promotion failed:', err.message);
+      console.error('[Automation] Scheduled promotion failed:', err?.message || err);
     });
   }, Math.max(1, settings.interval_minutes) * 60 * 1000);
 }
